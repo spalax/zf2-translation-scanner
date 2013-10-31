@@ -17,7 +17,6 @@ $console = new \Zf2TranslationScanner\Console(array(
     'tmp-dir|t=s' => '[Default='.$tmpDir.'] Dir where script can store it is temporary data',
     'indir|i=s'   => '[Default=($root-dir)] Dir to scan for not translated sentences',
     'outdir|o=s' => '[Default=($root-dir)'.$resultDir.'] Dir for output .mo and .po files',
-    'jsdir|js=s' => 'Dir for output .js strings files',
     'email|e=s' => '[Default='.$bugsEmail.']Email of person who responsible for bugs in translations',
     'verbose|v' => 'Print verbose output',
     'languages|l=s' => '[Default='.$languages.'] Define languages using comma, which po\'s will be regenerated and mo\'s built',
@@ -132,73 +131,42 @@ $wordsContainer->addWords($collector->parse($filesToParse)); // Parser_Source
 
 $console->log('Collector finished successful. Found ' . $wordsContainer->countWords() . ' strings in ' . $wordsContainer->countFiles() . ' files');
 
-if (!$console->getOption('only-compress')) {
+$console->log('Generating translation sandbox...');
+foreach ($wordsContainer->getFiles() as $fileName) {
+    $file = new \Zf2TranslationScanner\File\Output\Php(str_replace($projectRootDir, $tmpDir . '/' . $translationWordsDir, $fileName));
+    $file->setTranslatableWordsContainer(new \Zf2TranslationScanner\WordsContainer($wordsContainer->getWordsFromFile($fileName)));
+    $file->save();
+}
+$console->log('Translation sandbox generated.');
 
-    $console->log('Generating translation sandbox...');
-    foreach ($wordsContainer->getFiles() as $fileName) {
-        $file = new \Zf2TranslationScanner\File\Output\Php(str_replace($projectRootDir, $tmpDir . '/' . $translationWordsDir, $fileName));
-        $file->setTranslatableWordsContainer(new \Zf2TranslationScanner\WordsContainer($wordsContainer->getWordsFromFile($fileName)));
-        $file->save();
-    }
-    $console->log('Translation sandbox generated.');
+$console->log('Generating new Portable Object Template...');
+$poFileManager = new \Zf2TranslationScanner\FileManager\Po($system);
 
-    $console->log('Generating new Portable Object Template...');
-    $poFileManager = new \Zf2TranslationScanner\FileManager\Po($system);
+$templateFile = new SplFileInfo($poFileManager->createTemplateFile($tmpDir . '/' . $translationWordsDir, $bugsEmail));
 
-    $templateFile = new SplFileInfo($poFileManager->createTemplateFile($tmpDir . '/' . $translationWordsDir, $bugsEmail));
 
-    foreach ($locales as $locale) {
-        if (!is_dir($resultDir.'/'.strtolower($locale).'/LC_MESSAGES')) {
-
-            $console->log('Creating directory for locale '.$locale.' ...');
-            mkdir($resultDir.'/'.strtolower($locale).'/LC_MESSAGES', 0777, true);
-
-            $console->log('Creating empty mo file in '.$resultDir.'/'.strtolower($locale).'/LC_MESSAGES/lang.mo ...');
-            touch($resultDir.'/'.strtolower($locale).'/LC_MESSAGES/lang.mo');
-
-            $console->log('Copying template pot file to '.$resultDir.'/'.strtolower($locale).'/LC_MESSAGES/lang.po ...');
-            copy($templateFile->getPathname(), $resultDir.'/'.strtolower($locale).'/LC_MESSAGES/lang.po');
-        }
-    }
-
-    $console->log('Updating translation files...');
-    $translationFiles = new \Zf2TranslationScanner\FilterIterator\File (
-        new RecursiveIteratorIterator(new RecursiveDirectoryIterator($resultDir)),
-        array('po'));
-    
-    foreach ($translationFiles as $translationFile) {
-        $locale = basename(dirname($translationFile->getPath()));
-        $console->log("Updating translation file for locale " . $locale . '...');
-        $poFileManager->updateTranslation($translationFile, $templateFile);
-    }
-    $console->log('Translation files updated.');
-
-    if ($console->getOption('spellfile')) {
-        $console->log('Checking strings spelling...');
-        $wordsContainer->checkSpelling(new \Zf2TranslationScanner\SpellChecker\Aspell());
-        $console->log('Strings spellcheck finished.');
-    }
+foreach ($locales as $locale) {
+    $system->generatePoFile($templateFile->getPathname(), $resultDir.'/'.strtolower($locale).'.po', $locale);
 }
 
-//$moFiles = new Translation_FilterIterator_File(
-//                              new RecursiveIteratorIterator(new RecursiveDirectoryIterator($resultDir)),
-//                              array('mo'));
-//
-//require_once 'Zend/Translate.php';
-//foreach($moFiles as $moFile){
-//     $translator = new Zend_Translate('gettext', $moFile->getPathname(), basename(dirname($moFile->getPath())));
-//     foreach($jsWordsContainer->getValues() as $word) {
-//          $word->setTranslation($translator->_($word->getText()));
-//     }
-//     $locale = implode('-', explode('_', strtolower(basename(dirname($moFile->getPath())))));
-//     $console->log("Generating ".$locale." localization...");
-//     $translationJsFile = new Translation_File_Output_JavaScript("{$jsDir}{$locale}/i18n.js");
-//     $translationJsFile->setTranslatableWordsContainer($jsWordsContainer);
-//     $translationJsFile->save();
-//     unset($translator);
-//}
+$console->log('Updating translation files...');
+$translationFiles = new \Zf2TranslationScanner\FilterIterator\File (
+    new RecursiveIteratorIterator(new RecursiveDirectoryIterator($resultDir)),
+    array('po'));
 
-//$console->log("JavaScript localization finished.");
+/* @var $translationFile \SplFileInfo */
+foreach ($translationFiles as $translationFile) {
+    $console->log("Updating translation file " . $translationFile->getPathname());
+    $poFileManager->updateTranslation($translationFile, $templateFile);
+}
+
+$console->log('Translation files updated.');
+
+if ($console->getOption('spellfile')) {
+    $console->log('Checking strings spelling...');
+    $wordsContainer->checkSpelling(new \Zf2TranslationScanner\SpellChecker\Aspell());
+    $console->log('Strings spellcheck finished.');
+}
 
 $console->log('Cleaning temporary files...');
 $system->remove($tmpDir . '/' . $translationWordsDir);
