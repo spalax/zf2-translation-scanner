@@ -11,5 +11,5 @@ class Php extends OutputAbstract
     public function getTemplateFile()
     {
 		return dirname(__FILE__).'/Php.phtml';	
-	}	
+	}
 }

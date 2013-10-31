@@ -35,7 +35,7 @@ class Files extends File implements \Iterator {
 		$extension = $file->getExtension();
 		if(isset($this->scannersByExtensions[$extension])){
 			foreach($this->scannersByExtensions[$extension] as $scannerSuffix){
-				$scannerClass = ucfirst("Translation_File_Source_Scanner_".$scannerSuffix);
+                $scannerClass = "\\Zf2TranslationScanner\\File\\Source\\Scanner\\".ucfirst($scannerSuffix);
 				$file->addScanner(new $scannerClass());
 			}
 		}

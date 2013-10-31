@@ -23,4 +23,15 @@ class Console extends Getopt
         }
         if ($exit === true) exit(0);
     }
+
+    /**
+     * Show Error message
+     *
+     * @param string $template
+     * @param array $data
+     */
+    public function error($template = "", $data = array())
+    {
+        $this->log("[ERROR] ".$template, $data, true, true);
+    }
 }
