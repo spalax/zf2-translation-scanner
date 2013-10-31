@@ -1,6 +1,6 @@
 {
-    "name": "spalax/zf2-translation-collector",
-    "description": "Utilities",
+    "name": "spalax/zf2-translation-scanner",
+    "description": "Zf2 module it is scan all files to extract translatable words and build *.po and *.mo files.",
     "authors": [
         {
             "name": "Mylotskyi Oleksii",
