@@ -21,5 +21,8 @@
             "Zf2TranslationScanner": "src/"
         }
     },
+    "bin": [
+        "bin/translation-scanner"
+    ],
     "minimum-stability": "dev"
 }
