@@ -16,18 +16,17 @@ $console = new \Zf2TranslationScanner\Console(array(
     'skip-js|sj' => 'Skip js file building',
     'only-compress|oc' => 'Should script only build JS compressed translation file',
     'spellfile|of=s' => 'This file will contains all words who does not pass spell checking',
-
-    'help|h' => 'Show this information',
-    ' ' => './build_lang_file.php -v'));
+    'help|h' => 'Show this information'));
 
 try {
     $console->parse();
     if (isset($console->h)) {
+        $console->setOption('verbose', true);
         $console->log($console->getUsageMessage(), array(), true, true);
         exit(0);
     }
 } catch (\Zend\Console\Exception\ExceptionInterface $e) {
-    $console->log($console->getUsageMessage(), array(), true, true);
+    $console->error($e->getMessage(), array(), true);
 }
 
 $translationWordsDir = '__translation';
@@ -40,16 +39,14 @@ if (!is_null($console->getOption('tmp-dir'))) {
 }
 
 if (!is_dir($tmpDir) || !is_writable($tmpDir)) {
-    $console->log($console->getUsageMessage(), array(), true, true);
-    $console->error("Invalid temporary dir [$tmpDir], please define valid one, and check if it is writable");
+    $console->error("Invalid temporary dir [$tmpDir], please define valid one, and check if it is writable", array(), true);
 }
 
 $projectRootDir = "";
 if (isset($console->p) && is_dir($console->p) && is_readable($console->p)) {
     $projectRootDir = $console->p;
 } else {
-    $console->log($console->getUsageMessage(), array(), true, true);
-    $console->error("Invalid project root-dir [$console->p] please define valid root-dir option, and check if it is readable");
+    $console->error("Invalid project root-dir [$console->p] please define valid root-dir option, and check if it is readable", array(), true);
 }
 
 $parseDir = $projectRootDir;
@@ -58,8 +55,7 @@ if (isset($console->i)) {
 }
 
 if (!is_dir($parseDir) || !is_readable($parseDir)) {
-    $console->log($console->getUsageMessage(), array(), true, true);
-    $console->error("Invalid parse dir [$parseDir], please define valid one, and check if it is readable");
+    $console->error("Invalid parse dir [$parseDir], please define valid one, and check if it is readable", array(), true);
 }
 
 $resultDir = $projectRootDir.'/language';
@@ -68,8 +64,7 @@ if (isset($console->o)) {
 }
 
 if (!is_dir($resultDir) || !is_writable($resultDir)) {
-    $console->log($console->getUsageMessage(), array(), true, true);
-    $console->error("Invalid output dir [$resultDir], please define valid one, and check if it is writable");
+    $console->error("Invalid output dir [$resultDir], please define valid one, and check if it is writable", array(), true);
 }
 
 //if (isset($console->jsdir) && is_dir($console->jsdir)) {

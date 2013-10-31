@@ -30,8 +30,12 @@ class Console extends Getopt
      * @param string $template
      * @param array $data
      */
-    public function error($template = "", $data = array())
+    public function error($template = "", $data = array(), $showUsage = false)
     {
+        $this->v = true;
+        if ($showUsage == true) {
+            $this->log($this->getUsageMessage());
+        }
         $this->log("[ERROR] ".$template, $data, true, true);
     }
 }
