@@ -13,7 +13,7 @@ abstract class ScannerAbstract implements ScannerInterface {
 	protected function _scanForConstruction($regexp, $content)
 	{
 		$matches = array();
-		preg_match_all($regexp,$content,$matches);
+		preg_match_all($regexp, $content, $matches);
 		return isset($matches[1])?$matches[1]:array();
 	}
 }

@@ -29,8 +29,7 @@ class Po extends FileManagerAbstract
      */
     public function createTemplateFile($sourceDir, $bugsEmail)
     {
-        $this->_system->generatePotFile($sourceDir, $bugsEmail);
-        return 'messages.pot';
+        return $this->_system->generatePotFile($sourceDir, $bugsEmail);
     }
 
     /**

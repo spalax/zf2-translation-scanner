@@ -128,7 +128,7 @@ class Word extends \ArrayObject{
 	 */
 	public function occurredInFile($fileName)
 	{
-		return isset($this->_occurrences[$fileName]);
+        return isset($this->occurrences[$fileName]);
 	}
 	
 	

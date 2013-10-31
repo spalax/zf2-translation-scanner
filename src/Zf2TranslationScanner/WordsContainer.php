@@ -130,7 +130,7 @@ class WordsContainer implements \ArrayAccess, \Countable{
 	public function getWordsFromFile($fileName)
 	{
 		$words = array();
-		foreach($this->words as $word){
+        foreach($this->words as $word){
 			if($word->occurredInFile($fileName)){
 				array_push($words, $word);
 			}
