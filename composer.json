@@ -1,0 +1,25 @@
+{
+    "name": "spalax/zf2-translation-collector",
+    "description": "Utilities",
+    "authors": [
+        {
+            "name": "Mylotskyi Oleksii",
+            "email": "spalaxinco@gmail.com"
+        }
+    ],
+    "keywords": [
+        "utils"
+    ],
+    "license": "MIT",
+    "require": {
+        "php": ">=5.3",
+        "zendframework/zendframework": ">=2.0.0",
+        "mikey179/vfsStream": ">=1"
+    },
+    "autoload": {
+        "psr-0": {
+            "Zf2Libs": "src/"
+        }
+    },
+    "minimum-stability": "dev"
+}

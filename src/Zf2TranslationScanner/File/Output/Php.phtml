@@ -1,0 +1,7 @@
+<?php 
+echo '<?php ';
+foreach($this->getTranslatableWordsContainer()->getValues() as $word):?>
+_("<?php echo addcslashes(str_replace('\\\'', '\'', $word->getText()), '"');?>");
+<?php endforeach;
+echo ' ?>';
+?>

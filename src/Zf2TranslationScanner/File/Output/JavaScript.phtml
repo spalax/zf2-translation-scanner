@@ -1,0 +1,16 @@
+({
+	
+	<?php
+	$first = true; 
+	foreach($this->getTranslatableWordsContainer()->getValues() as $word):
+		if(!$first):
+			?>,
+	<?php 
+		endif;
+		$first=false;
+		
+		?>'<?php echo addslashes($word->getText());?>' : '<?php echo addslashes($word->getTranslation());?>'<?php 
+	endforeach;
+	?>
+
+})

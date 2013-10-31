@@ -1,0 +1,11 @@
+<phpunit bootstrap="tests/bootstrap.php">
+    <testsuite name="Translation Test Suite">
+        <directory>tests</directory>
+        <directory>tests/Collector</directory>
+        <directory>tests/File</directory>
+        <directory>tests/SpellChecker</directory>
+    </testsuite>
+    <logging>
+        <log type="coverage-text" target="php://stdout" showUncoveredFiles="false"/>
+    </logging>
+</phpunit>
