@@ -146,7 +146,9 @@ $templateFile = new SplFileInfo($poFileManager->createTemplateFile($tmpDir . '/'
 
 
 foreach ($locales as $locale) {
-    $system->generatePoFile($templateFile->getPathname(), $resultDir.'/'.strtolower($locale).'.po', $locale);
+    if (!file_exists($resultDir.'/'.strtolower($locale).'.po')) {
+        $system->generatePoFile($templateFile->getPathname(), $resultDir.'/'.strtolower($locale).'.po', $locale);
+    }
 }
 
 $console->log('Updating translation files...');
