@@ -55,7 +55,7 @@ class System {
 	{
 		system('>'.$sourceDir.'/messages.po');
         
-		if ((system("xgettext --force-po -o $sourceDir/messages.po --from-code=utf-8 --join-existing --keyword=_ --language=PHP --copyright-holder='Visoinc LTD' --msgid-bugs-address=".$bugsAdress." `find ".$sourceDir." -type f`", $code)) && $code != 0) {
+		if ((system("xgettext --force-po -o $sourceDir/messages.po --from-code=utf-8 --join-existing --keyword=_ --language=PHP --copyright-holder='Your company' --msgid-bugs-address=".$bugsAdress." `find ".$sourceDir." -type f`", $code)) && $code != 0) {
 			throw new \RuntimeException("Xgettext command cannot be done exit with code ($code)");
 		}
 

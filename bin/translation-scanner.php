@@ -171,6 +171,6 @@ if ($console->getOption('spellfile')) {
 }
 
 $console->log('Cleaning temporary files...');
+$system->copy($templateFile->getPathname(), $resultDir);
 $system->remove($tmpDir . '/' . $translationWordsDir);
-$system->remove($tmpDir . '/messages.pot');
 $console->log('Finished successful');
