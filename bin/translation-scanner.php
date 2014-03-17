@@ -58,12 +58,17 @@ if (isset($console->p) && is_dir($console->p) && is_readable($console->p)) {
 }
 
 $parseDir = $projectRootDir;
+
 if (isset($console->i)) {
-    $parseDir = $projectRootDir.$console->i;
+    $parseDir = $console->i;
 }
 
-if (!is_dir($parseDir) || !is_readable($parseDir)) {
-    $console->error("Invalid parse dir [$parseDir], please define valid one, and check if it is readable", array(), true);
+$parseDirs = explode(',', $parseDir);
+foreach ($parseDirs as $parseDir) {
+    if (!is_dir($parseDir) || !is_readable($parseDir)) {
+        $console->error("Invalid parse dir [$parseDir],
+                         please define valid one, and check if it is readable", array(), true);
+    }
 }
 
 $resultDir = $projectRootDir.$resultDir;
@@ -120,11 +125,17 @@ $console->log("Starting to collect translatable strings...");
 
 $collector = new \Zf2TranslationScanner\Collector();
 
-$filesToParse = new \Zf2TranslationScanner\Collector\Source\Files(
-    new RecursiveIteratorIterator(
-            new RecursiveDirectoryIterator($parseDir)
-    ),
-    $extensions);
+if (count($parseDirs) > 1) {
+    $parseDirIterator = new AppendIterator();
+    foreach ($parseDirs as $parseDir) {
+        $parseDirIterator->append(new RecursiveIteratorIterator(
+                                        new RecursiveDirectoryIterator($parseDir)));
+    }
+} else {
+    $parseDirIterator = new RecursiveIteratorIterator(new RecursiveDirectoryIterator($parseDirs[0]));
+}
+
+$filesToParse = new \Zf2TranslationScanner\Collector\Source\Files($parseDirIterator, $extensions);
 
 $console->log("Collecting data from files...");
 $wordsContainer->addWords($collector->parse($filesToParse)); // Parser_Source
