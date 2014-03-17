@@ -1,6 +1,7 @@
 <?php
 namespace Zf2TranslationScanner\File\Source\Scanner;
 
+use Zend\View\Helper\EscapeHtml;
 use Zf2TranslationScanner\File\Source\ScannerAbstract;
 
 class Php extends ScannerAbstract
@@ -26,12 +27,35 @@ class Php extends ScannerAbstract
     private function _scanForArrayConstruction($content)
     {
         $matches = array();
-        if (preg_match('/protected\s\$messageTemplates.*?=.*?array\((.*?\);)/s', $content, $matches)) {
-            if (preg_match_all('/.*?=>\s*([\"|\'].+?)[\,|\)]\n/', trim($matches[1]), $m)) {
-                $matches = array_map(function ($match){
-                    return trim($match, '"\'');
-                }, $m[1]);
+        if (preg_match('/protected\s\$messageTemplates.*?=/s', $content, $matches)) {
+            $tokens = token_get_all($content);
+
+            $namespace = $class = '';
+            for ($i=0;$i<count($tokens);$i++) {
+                if ($tokens[$i][0] === T_NAMESPACE) {
+                    for ($j=$i+1;$j<count($tokens); $j++) {
+                        if ($tokens[$j][0] === T_STRING) {
+                            $namespace .= '\\'.$tokens[$j][1];
+                        } else if ($tokens[$j] === '{' || $tokens[$j] === ';') {
+                            break;
+                        }
+                    }
+                }
+
+                if ($tokens[$i][0] === T_CLASS) {
+                    for ($j=$i+1;$j<count($tokens);$j++) {
+                        if ($tokens[$j] === '{') {
+                            $class = $tokens[$i+2][1];
+                            break;
+                        }
+                    }
+                }
             }
+
+            if (!class_exists($namespace.'\\'.$class)) return $matches;
+            $ref = new \ReflectionClass($namespace.'\\'.$class);
+            $props = $ref->getDefaultProperties();
+            return $props['messageTemplates'];
         }
         return $matches;
     }
