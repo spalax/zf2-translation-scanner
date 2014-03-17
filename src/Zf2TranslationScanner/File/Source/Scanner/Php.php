@@ -26,7 +26,7 @@ class Php extends ScannerAbstract
     private function _scanForArrayConstruction($content)
     {
         $matches = array();
-        if (preg_match('/protected\s\$\_messageTemplates.*?=.*?array\((.*?);/s', $content, $matches)) {
+        if (preg_match('/protected\s\$\messageTemplates.*?=.*?array\((.*?);/s', $content, $matches)) {
             if (preg_match_all('/.*?=>.*?\"(([^\\\"]|\\\\.)+)\"/', trim($matches[1]), $m)) {
                 $matches = $m[1];
             }
