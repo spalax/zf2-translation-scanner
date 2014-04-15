@@ -12,6 +12,8 @@ class Php extends ScannerAbstract
             $this->_scanForConstruction('/\_\_\(\"(([^\"]|\\\\.)+)\"\)/', $content),
             $this->_scanForConstruction('/\_\_\(\"(([^\"]|\\\\.)+)\",[^\)]+/', $content),
             $this->_scanForConstruction('/\_\_\(\'(([^\']|\\\\.)+)\',[^\)]+/', $content),
+            $this->_scanForConstruction('/translate\(\'([^\']+)\'.*?\)/smx', $content),
+            $this->_scanForConstruction('/translate\(\"([^\"]+)\".*?\)/smx', $content),
             $this->_scanForArrayConstruction($content)
         );
         return $foundPhrases;
